@@ -31,7 +31,7 @@ def get_auth_token():
     """
     url = 'https://{}/dna/system/api/v1/auth/token'.format(DNAC_URL)                      # Endpoint URL
     hdr = {'content-type' : 'application/json'}                                           # Define request header
-    resp = requests.post(url, auth=HTTPBasicAuth(DNAC_USER, DNAC_PASS), headers=hdr)      # Make the POST Request
+    resp = requests.post(url, auth=HTTPBasicAuth(DNAC_USER, DNAC_PASS), headers=hdr, verify=False)      # Make the POST Request
     token = resp.json()['Token']                                                          # Retrieve the Token
     return token    # Create a return statement to send the token back for later use
 
@@ -43,7 +43,7 @@ def get_device_list():
     token = get_auth_token() # Get Token
     url = "https://{}/api/v1/network-device/1/10".format(DNAC_URL)
     hdr = {'x-auth-token': token, 'content-type' : 'application/json'}
-    resp = requests.get(url, headers=hdr)  # Make the Get Request
+    resp = requests.get(url, headers=hdr, verify=False)  # Make the Get Request
     device_list = resp.json()
     print("{0:25}{1:25}{2:30}".format("hostname", "mgmt IP", "Type"))
     for device in device_list['response']:
@@ -64,7 +64,7 @@ def initiate_path_trace(token):
     }
     url = "https://{}/api/v1/flow-analysis".format(DNAC_URL)
     header = {'content-type': 'application/json', 'x-auth-token': token}
-    path_response = requests.post(url, data=json.dumps(param), headers=header)
+    path_response = requests.post(url, data=json.dumps(param), headers=header, verify=False)
     path_json = path_response.json()
     flow_id = path_json['response']['flowAnalysisId']
     print("Path Trace Initiated! Path ID --> ", flow_id)
@@ -75,7 +75,7 @@ def initiate_path_trace(token):
 def retrieve_pt_results(flow_id, token):
     url = "https://{}/api/v1/flow-analysis/{}".format(DNAC_URL, flow_id)
     hdr = {'x-auth-token': token, 'content-type' : 'application/json'}
-    path_result = requests.get(url, headers=hdr)
+    path_result = requests.get(url, headers=hdr, verify=False)
     print(json.dumps(path_result.json(), indent=4, sort_keys=True))
 
 
